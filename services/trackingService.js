@@ -170,6 +170,7 @@ async function displayOrderStatus(trackingNumber, modal) {
                 <p style="margin: 8px 0; color: #6b7280;"><strong>Address:</strong> ${order.customer_address}</p>
                 <p style="margin: 8px 0; color: #6b7280;"><strong>Total Amount:</strong> ₹${order.total_amount.toFixed(2)}</p>
                 <p style="margin: 8px 0; color: #6b7280;"><strong>Payment Status:</strong> <span style="color: ${order.payment_status === 'paid' ? '#10b981' : '#f59e0b'}; font-weight: 600;">${order.payment_status.toUpperCase()}</span></p>
+                <p style="margin: 8px 0; color: #6b7280;"><strong>Payment Method:</strong> <span style="font-weight: 600;">${order.payment_method === 'cod' ? 'Cash on Delivery' : 'Online Payment'}</span></p>
             </div>
         `;
 

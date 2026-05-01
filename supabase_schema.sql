@@ -21,6 +21,7 @@ CREATE TABLE orders (
     delivery_charge DECIMAL DEFAULT 100,
     payment_status TEXT DEFAULT 'pending', -- 'pending', 'paid', 'failed'
     order_status TEXT DEFAULT 'placed', -- 'placed', 'processing', 'shipped', 'delivered'
+    payment_method TEXT DEFAULT 'razorpay', -- 'razorpay' or 'cod'
     payment_id TEXT, -- Razorpay Payment ID
     items JSONB NOT NULL, -- Array of objects: {name, quantity, price}
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
