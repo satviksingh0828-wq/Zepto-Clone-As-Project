@@ -1,9 +1,9 @@
 {
-  "name": "quickkart",
+  "name": "cartify",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "QuickKart - Modern Grocery Delivery App",
+  "description": "CARTIFY - Modern Grocery Delivery App",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.2"
   },
-  "keywords": ["grocery", "delivery", "quickkart", "ecommerce"],
+  "keywords": ["grocery", "delivery", "cartify", "ecommerce"],
   "author": "",
   "license": "MIT"
 }

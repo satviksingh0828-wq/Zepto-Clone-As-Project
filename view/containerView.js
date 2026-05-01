@@ -1,7 +1,10 @@
 
 import { Controller } from "../controller/controller";
 import { CartView } from "./cartView/cartView";
-// import { AddSubButton } from "./addandSubButton";
+import { fetchProducts } from "../services/supabaseService.js";
+import { processCheckout, showOrderConfirmation } from "../services/checkoutService.js";
+import { openTrackingPage, saveTrackingNumber } from "../services/trackingService.js";
+
 export class ContainerView{
     constructor(data){
         this.data = data;
@@ -238,7 +241,7 @@ export class ContainerView{
     
     setupTheme() {
         const themeToggle = document.getElementById('themeToggle');
-        const savedTheme = localStorage.getItem('quickkart-theme');
+        const savedTheme = localStorage.getItem('cartify-theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const theme = savedTheme || (prefersDark ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
@@ -247,7 +250,7 @@ export class ContainerView{
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('quickkart-theme', newTheme);
+            localStorage.setItem('cartify-theme', newTheme);
         });
     }
     
@@ -322,7 +325,8 @@ export class ContainerView{
             
             const subtotal = cartItems.reduce((sum, item) => sum + (item.discount_price * item.quantity), 0);
             const tax = subtotal * 0.18;
-            const total = subtotal + tax;
+            const deliveryCharge = 100;
+            const total = subtotal + tax + deliveryCharge;
             
             cartFooter.innerHTML = `
                 <div class="total-row">
@@ -333,12 +337,37 @@ export class ContainerView{
                     <span>Tax (18%):</span>
                     <span>₹${tax.toFixed(2)}</span>
                 </div>
+                <div class="total-row">
+                    <span>Delivery Charge:</span>
+                    <span>₹${deliveryCharge.toFixed(2)}</span>
+                </div>
                 <div class="total-row final">
                     <span>Total:</span>
                     <span>₹${total.toFixed(2)}</span>
                 </div>
-                <button class="checkout-button">Proceed to Checkout</button>
+                <button class="checkout-button" id="checkoutBtn">Proceed to Checkout</button>
             `;
+            
+            // Add checkout handler
+            const checkoutBtn = cartFooter.querySelector('#checkoutBtn');
+            checkoutBtn.addEventListener('click', async () => {
+                cartModal.style.display = 'none';
+                const result = await processCheckout(cartItems, subtotal, tax);
+                
+                if (result) {
+                    // Show confirmation
+                    await showOrderConfirmation(result.trackingNumber, result.total);
+                    
+                    // Save tracking number and open tracking page
+                    saveTrackingNumber(result.trackingNumber);
+                    openTrackingPage(result.trackingNumber);
+                    
+                    // Clear cart
+                    this.data.forEach(item => item.quantity = 0);
+                    this.updateCartCount();
+                    this.renderItems(this.data);
+                }
+            });
             
             // Add event listeners for cart quantity controls
             cartItemsContainer.querySelectorAll('.subtract, .add').forEach(btn => {
